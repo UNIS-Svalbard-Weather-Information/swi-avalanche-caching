@@ -1951,6 +1951,7 @@ dependencies = [
     { name = "matplotlib" },
     { name = "pyproj" },
     { name = "rasterio" },
+    { name = "requests" },
     { name = "shapely" },
     { name = "tqdm" },
 ]
@@ -1969,6 +1970,7 @@ requires-dist = [
     { name = "matplotlib", specifier = ">=3.10.8" },
     { name = "pyproj", specifier = ">=3.7.2" },
     { name = "rasterio", specifier = ">=1.5.0" },
+    { name = "requests", specifier = ">=2.32.5" },
     { name = "shapely", specifier = ">=2.1.2" },
     { name = "tqdm", specifier = ">=4.67.1" },
 ]
