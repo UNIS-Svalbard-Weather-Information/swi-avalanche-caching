@@ -2,7 +2,7 @@ from datetime import datetime
 from loguru import logger
 import os
 import pandas as pd
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 # Define colors as constants
 COLORS = [
