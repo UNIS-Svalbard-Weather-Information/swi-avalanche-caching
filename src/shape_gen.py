@@ -18,7 +18,10 @@ COLORS = [
 
 
 def create_shape_legend(
-    results: Dict[str, Any], path: str = "./data/avalanche-forecast/"
+    results: Dict[str, Any],
+    path_shape: str = "./data/",
+    path_legend: str = "./metadata/",
+    layer_name: str = "avalanche-forecast",
 ) -> None:
     """
     Create shapefile, mapnik configuration and legend for avalanche forecasts.
@@ -31,13 +34,16 @@ def create_shape_legend(
         ValueError: If required data is missing or invalid.
         IOError: If there's an issue writing files.
     """
-    try:
-        os.makedirs(path, exist_ok=True)
-    except OSError as e:
-        logger.error(f"Failed to create directory {path}: {e}")
-        raise
 
     for day, ar in results.items():
+        spath = os.path.join(path_shape, f"{layer_name}-{day}")
+
+        try:
+            os.makedirs(spath, exist_ok=True)
+        except OSError as e:
+            logger.error(f"Failed to create directory {spath}: {e}")
+            raise
+
         try:
             logger.info(f"Processing data for day: {day}")
 
@@ -48,7 +54,9 @@ def create_shape_legend(
             # Save shapefile if geodataframe exists
             if ar["gdf"] is not None:
                 try:
-                    ar["gdf"].to_crs(epsg=3857).to_file(f"{path}{day}.shp")
+                    ar["gdf"].to_crs(epsg=3857).to_file(
+                        os.path.join(spath, f"{day}.shp")
+                    )
                     logger.info(f"Saved shapefile for {day}")
                 except Exception as e:
                     logger.error(f"Failed to save shapefile for {day}: {e}")
@@ -165,14 +173,20 @@ def create_shape_legend(
 
             # Write files with explicit UTF-8 encoding
             try:
-                with open(f"{path}{day}.html", "w", encoding="utf-8") as file:
+                lpath = os.path.join(path_legend, f"{layer_name}-{day}")
+                os.makedirs(lpath, exist_ok=True)
+                with open(
+                    os.path.join(lpath, "legend.html"), "w", encoding="utf-8"
+                ) as file:
                     file.write(legend_file_html)
                     logger.info(f"Wrote legend HTML for {day}")
             except IOError as e:
                 logger.error(f"Failed to write HTML file for {day}: {e}")
 
             try:
-                with open(f"{path}{day}.xml", "w", encoding="utf-8") as file:
+                with open(
+                    os.path.join(spath, f"{day}.xml"), "w", encoding="utf-8"
+                ) as file:
                     file.write(mapnik_file_xml)
                     logger.info(f"Wrote mapnik XML for {day}")
             except IOError as e:
