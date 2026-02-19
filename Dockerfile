@@ -30,5 +30,9 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Copy application code
 COPY . .
 
+# Make the entrypoint script executable
+RUN chmod +x ./entrypoint.sh
+RUN chmod +x ./run-cron.sh
 
-CMD ["python", "main.py"]
+# Use the entrypoint script
+ENTRYPOINT ["./entrypoint.sh"]
