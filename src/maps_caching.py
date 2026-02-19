@@ -241,8 +241,10 @@ class MapsCaching:
 
         except requests.RequestException as e:
             self.logger.error(f"Failed to download DEM: {e}")
+            raise requests.RequestException("Failed to download DEM") from e
         except zipfile.BadZipFile as e:
             self.logger.error(f"Failed to extract DEM: {e}")
+            raise zipfile.BadZipFile("Failed to extract DEM") from e
 
     def _compute_steepness_raster(self, res="DTM50"):
         """
@@ -305,6 +307,7 @@ class MapsCaching:
 
         except Exception as e:
             self.logger.error(f"Failed to compute steepness raster: {e}")
+            raise RuntimeError("Steepness computation failed") from e
 
     def _create_steepness_contour(
         self,
@@ -416,11 +419,12 @@ class MapsCaching:
                 self.logger.info(
                     f"Steepness contour shapefile created at {contour_path}"
                 )
+
                 return contour_path
 
         except Exception as e:
             self.logger.error(f"Failed to create steepness contour: {e}")
-            return None
+            raise RuntimeError("Steepness contour computation failed") from e
 
     def _compute_aspect_raster(self, res="DTM50"):
         """
@@ -481,7 +485,7 @@ class MapsCaching:
 
         except Exception as e:
             self.logger.error(f"Failed to compute aspect raster: {e}")
-            return None
+            raise RuntimeError("Aspect raster computation failed") from e
 
     def get_DEM(self, res="DTM50"):
         """

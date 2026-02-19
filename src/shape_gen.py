@@ -35,6 +35,8 @@ def create_shape_legend(
         IOError: If there's an issue writing files.
     """
 
+    errors = []
+
     for day, ar in results.items():
         spath = os.path.join(path_shape, f"{layer_name}-{day}")
 
@@ -193,5 +195,10 @@ def create_shape_legend(
                 logger.error(f"Failed to write XML file for {day}: {e}")
 
         except Exception as e:
+            errors.append(e)
             logger.error(f"Error processing day {day}: {e}")
             continue
+
+    if errors:
+        # Raise all collected errors at the end
+        raise ExceptionGroup("Errors occurred during processing", errors)
