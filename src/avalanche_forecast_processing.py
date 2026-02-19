@@ -128,7 +128,7 @@ class AvalancheForecastProcessing:
 
             # Ensure the binary string is of length 8
             if len(binary_string) != 8:
-                self.logger.error(f"Binary string must be 8 characters long.")
+                self.logger.error("Binary string must be 8 characters long.")
                 raise ValueError("Binary string must be 8 characters long.")
 
             # Create a list of directions based on the binary string
@@ -139,6 +139,7 @@ class AvalancheForecastProcessing:
             return direction_list
         except Exception as e:
             self.logger.error(f"Error processing binary string: {e}")
+            raise RuntimeError("Error processing binary string") from e
             return []
 
     def _create_geojson_from_dicts(self, gdf_dicts, colormap="viridis"):
@@ -376,6 +377,7 @@ class AvalancheForecastProcessing:
 
         except requests.RequestException as e:
             self.logger.error(f"Error fetching data from API: {e}")
+            raise RuntimeError(f"Error fetching data from API: {e}") from e
 
     def fetch_forecast_data(self):
         """
@@ -440,6 +442,7 @@ class AvalancheForecastProcessing:
                 self.logger.error(
                     f"Error fetching forecast data for region {region_id}: {e}"
                 )
+                raise RuntimeError(f"Error fetching data from API: {e}") from e
 
     def get_region(self, region_id):
         """
@@ -570,6 +573,7 @@ class AvalancheForecastProcessing:
 
         except Exception as e:
             self.logger.error(f"Error processing forecast: {e}")
+            raise RuntimeError(f"Error processing forecast: {e}") from e
 
     def _create_forecast_layer_region_shape(self, region_info):
         try:
@@ -687,7 +691,7 @@ class AvalancheForecastProcessing:
 
         except Exception as e:
             self.logger.error(f"Error processing forecast: {e}")
-            raise
+            raise RuntimeError(f"Error processing forecast: {e}") from e
 
     def process_3003(self):
         """
