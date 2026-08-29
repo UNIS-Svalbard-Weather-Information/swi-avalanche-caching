@@ -1,15 +1,16 @@
+import os
+
+import requests
+from loguru import logger
+
 from src.avalanche_forecast_processing import AvalancheForecastProcessing
 from src.shape_gen import create_shape_legend
-import os
-import io
-from loguru import logger
-import requests
 
 
 def touch(path):
     """Emulates the 'touch' command by creating the file at *path* if it does not exist.
     If the file exists, its modification time will be updated."""
-    with io.open(path, "ab"):
+    with open(path, "ab"):
         os.utime(path, None)
 
 

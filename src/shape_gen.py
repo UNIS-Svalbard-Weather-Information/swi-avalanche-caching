@@ -1,8 +1,9 @@
-from datetime import datetime
-from loguru import logger
 import os
+from datetime import UTC, datetime
+from typing import Any
+
 import pandas as pd
-from typing import Dict, Any
+from loguru import logger
 
 # Define colors as constants
 COLORS = [
@@ -18,7 +19,7 @@ COLORS = [
 
 
 def create_shape_legend(
-    results: Dict[str, Any],
+    results: dict[str, Any],
     path_shape: str = "./data/",
     path_legend: str = "./metadata/",
     layer_name: str = "avalanche-forecast",
@@ -161,7 +162,7 @@ def create_shape_legend(
             legend_file_html += f"""
     
     This layer was updated on
-    <strong>{datetime.utcnow().strftime("%Y-%m-%d %H:%M")} UTC</strong> based on the avalanche forecast
+    <strong>{datetime.now(UTC).strftime("%Y-%m-%d %H:%M")} UTC</strong> based on the avalanche forecast
     published by <strong>Varsom.no</strong> and the <strong>Norwegian Meteorological Institute</strong> on the <strong>{pd.to_datetime(ar["forecast"].get("PublishTime", "NA")).strftime("%Y-%m-%d %H:%M")} UTC</strong>. It is valid for the <strong>{pd.to_datetime(ar["forecast"].get("ValidFrom", "NA")).strftime("%Y-%m-%d")}</strong>
     <br>
     
@@ -182,7 +183,7 @@ def create_shape_legend(
                 ) as file:
                     file.write(legend_file_html)
                     logger.info(f"Wrote legend HTML for {day}")
-            except IOError as e:
+            except OSError as e:
                 logger.error(f"Failed to write HTML file for {day}: {e}")
 
             try:
@@ -191,7 +192,7 @@ def create_shape_legend(
                 ) as file:
                     file.write(mapnik_file_xml)
                     logger.info(f"Wrote mapnik XML for {day}")
-            except IOError as e:
+            except OSError as e:
                 logger.error(f"Failed to write XML file for {day}: {e}")
 
         except Exception as e:

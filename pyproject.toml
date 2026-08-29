@@ -20,4 +20,18 @@ dependencies = [
 dev = [
     "ipykernel>=7.1.0",
     "jupyter>=1.1.1",
+    "ruff>=0.14.10",
+]
+
+[tool.ruff.lint]
+ignore = [
+    # Blind `except Exception` is deliberate here: batch loops over many
+    # days/regions log-and-continue on a per-item failure rather than aborting
+    # the whole run.
+    "BLE001",
+    # datetime.now() is used for local "today" boundaries in forecast-date
+    # calculations; adding tz= would need a real decision about which
+    # timezone the forecast pipeline expects, not something to guess in a
+    # lint cleanup.
+    "DTZ005",
 ]
