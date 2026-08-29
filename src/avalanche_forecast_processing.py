@@ -1,20 +1,19 @@
-import sys
-import os
-import requests
-from datetime import datetime, timedelta
-import geopandas as gpd
-from shapely.geometry import mapping, Polygon, MultiPolygon
-from shapely.ops import transform
-import geojson
-import matplotlib.pyplot as plt
 import json
+import os
 import traceback
-from pyproj import CRS, Transformer
 import urllib.parse
+from datetime import datetime, timedelta
+
+import geojson
+import geopandas as gpd
+import matplotlib.pyplot as plt
 import pandas as pd
-
-
+import requests
 from loguru import logger
+from pyproj import CRS, Transformer
+from shapely.geometry import MultiPolygon, Polygon, mapping
+from shapely.ops import transform
+
 from src.maps_caching import MapsCaching
 
 
@@ -238,7 +237,7 @@ class AvalancheForecastProcessing:
             os.makedirs(self.export_directory, exist_ok=True)
 
             # Construct the full file path
-            file_path = os.path.join(self.export_directory, f"{str(file_name)}.geojson")
+            file_path = os.path.join(self.export_directory, f"{file_name!s}.geojson")
 
             # Save the GeoJSON object to the file
             with open(file_path, "w") as file:

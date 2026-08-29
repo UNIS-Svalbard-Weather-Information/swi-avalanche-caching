@@ -1,14 +1,15 @@
 import os
-import zipfile
-import requests
-import tempfile
 import shutil
-import rasterio
-from rasterio.features import shapes
-import numpy as np
+import tempfile
+import zipfile
+
 import geopandas as gpd
-from shapely.geometry import shape, Polygon
+import numpy as np
+import rasterio
+import requests
 from loguru import logger
+from rasterio.features import shapes
+from shapely.geometry import shape
 from tqdm import tqdm
 
 ORIENTATION_RANGES = {
@@ -125,7 +126,7 @@ class MapsCaching:
                          DEM file is found in the managed directory.
         """
         managed_path = os.path.join(self.path, "managed")
-        for res in self.DEM_res.keys():
+        for res in self.DEM_res:
             # dem_filename = f"{res}_DEM_*.tif"
             for file in os.listdir(managed_path):
                 if file.startswith(f"{res}_DEM_") and file.endswith(".tif"):
@@ -145,7 +146,7 @@ class MapsCaching:
                          matching steepness raster file is found in the managed directory.
         """
         managed_path = os.path.join(self.path, "managed")
-        for res in self.DEM_res.keys():
+        for res in self.DEM_res:
             steepness_filename = f"{res}_steepness_raster.tif"
             steepness_path = os.path.join(managed_path, steepness_filename)
             if os.path.exists(steepness_path):
@@ -223,7 +224,7 @@ class MapsCaching:
                     zip_ref.extractall(temp_dir)
                     for root, _, files in os.walk(temp_dir):
                         for file in files:
-                            if file.endswith(".tif") or file.endswith(".txt"):
+                            if file.endswith((".tif", ".txt")):
                                 old_file_path = os.path.join(root, file)
                                 new_name = os.path.join(
                                     self.path, "managed", f"{res}_DEM_{file}"
@@ -597,7 +598,7 @@ class MapsCaching:
 
         if self.force or not os.path.exists(contour_path):
             self.logger.info(
-                f"Contour file not found or force flag is set. Creating new contour file."
+                "Contour file not found or force flag is set. Creating new contour file."
             )
             self.contour_path = self._create_steepness_contour(
                 min_steepness,
@@ -642,7 +643,7 @@ class MapsCaching:
 
         if self.force or not os.path.exists(contour_path):
             self.logger.info(
-                f"Contour file with orientation not found or force flag is set. Creating new contour file."
+                "Contour file with orientation not found or force flag is set. Creating new contour file."
             )
             self.contour_path = self._create_steepness_contour(
                 min_steepness, max_steepness, res, orientation
