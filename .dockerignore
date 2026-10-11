@@ -34,7 +34,13 @@ Dockerfile
 
 # Ignore virtual environment directories
 venv/
+.venv/
 .env/
+
+# Ignore tool caches and CI configuration
+.ruff_cache/
+.pytest_cache/
+.github/
 
 # Ignore macOS-specific files
 .DS_Store
