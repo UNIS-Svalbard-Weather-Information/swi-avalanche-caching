@@ -1,4 +1,6 @@
+import json
 import os
+import tempfile
 from datetime import UTC, datetime
 from typing import Any
 
@@ -16,6 +18,71 @@ COLORS = [
     "#CA6702",
     "#8D8D8D",
 ]
+
+
+def _iso_utc(value: Any) -> str | None:
+    """Format a timestamp as UTC ISO 8601 with a Z suffix, or None if unusable."""
+    try:
+        ts = pd.to_datetime(value)
+    except (ValueError, TypeError):
+        return None
+    if pd.isna(ts):
+        return None
+    ts = ts.tz_localize("UTC") if ts.tzinfo is None else ts.tz_convert("UTC")
+    return ts.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def build_legend_json(ar: dict[str, Any], updated: datetime) -> dict[str, Any]:
+    """Build the JSON legend (schema version 1) for one forecast day."""
+    forecast = ar["forecast"]
+    level_name = forecast.get("DangerLevelName")
+    level_token = (level_name or "").split(" ")[0]
+    level = int(level_token) if level_token.isdigit() else None
+
+    items = [
+        {
+            "id": str(key),
+            "label": pb.get("label", "Unknown"),
+            "fill": COLORS[i % len(COLORS)],
+            "border": "#998100",
+            "opacity": 0.5,
+            "description": pb.get("description"),
+        }
+        for i, (key, pb) in enumerate((ar.get("legend") or {}).items())
+    ]
+
+    links = [{"label": "View on Varsom", "url": ar["url"]}] if ar.get("url") else []
+
+    return {
+        "version": 1,
+        "title": "Avalanche forecast",
+        "updated": updated.astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "published": _iso_utc(forecast.get("PublishTime")),
+        "validFrom": _iso_utc(forecast.get("ValidFrom")),
+        "items": items,
+        "summary": {
+            "level": level,
+            "levelName": level_name,
+            "text": forecast.get("MainText"),
+            "iconUrl": f"https://www.varsom.no/Content/Images/AvalancheDangerLevels/level-{level_token or 0}.svg",
+        },
+        "links": links,
+    }
+
+
+def write_json_atomic(path: str, data: dict[str, Any]) -> None:
+    """Write JSON via a temp file and os.replace so readers never see a partial file."""
+    directory = os.path.dirname(path) or "."
+    fd, tmp = tempfile.mkstemp(dir=directory, suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as file:
+            json.dump(data, file, ensure_ascii=False, indent=2)
+        os.chmod(tmp, 0o644)
+        os.replace(tmp, path)
+    except BaseException:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+        raise
 
 
 def create_shape_legend(
@@ -185,6 +252,15 @@ def create_shape_legend(
                     logger.info(f"Wrote legend HTML for {day}")
             except OSError as e:
                 logger.error(f"Failed to write HTML file for {day}: {e}")
+
+            try:
+                write_json_atomic(
+                    os.path.join(lpath, "legend.json"),
+                    build_legend_json(ar, datetime.now(UTC)),
+                )
+                logger.info(f"Wrote legend JSON for {day}")
+            except OSError as e:
+                logger.error(f"Failed to write JSON file for {day}: {e}")
 
             try:
                 with open(
