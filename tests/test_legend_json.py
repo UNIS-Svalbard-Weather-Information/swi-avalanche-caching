@@ -6,7 +6,7 @@ import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from src import shape_gen  # noqa: E402
+from src import shape_gen
 
 
 def _forecast():
