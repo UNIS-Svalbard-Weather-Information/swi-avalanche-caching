@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.0](https://github.com/UNIS-Svalbard-Weather-Information/swi-avalanche-caching/compare/0.1.0...0.2.0) (2026-10-12)
+
+
+### Features
+
+* **docker:** run the cron job as an unprivileged user ([97b2d72](https://github.com/UNIS-Svalbard-Weather-Information/swi-avalanche-caching/commit/97b2d72f0eba8d3532863b79f74d73de81944560))
+* **docker:** run the cron job as an unprivileged user ([434f3fa](https://github.com/UNIS-Svalbard-Weather-Information/swi-avalanche-caching/commit/434f3fabc72228f5c1718b6fd863498bc50904c8))
+
+
+### Bug Fixes
+
+* **deps:** refresh uv.lock to current releases ([b31df90](https://github.com/UNIS-Svalbard-Weather-Information/swi-avalanche-caching/commit/b31df905e2afdd3c1c9c797dc68c2d22ba396e52))
+
 ## [0.1.0](https://github.com/UNIS-Svalbard-Weather-Information/swi-avalanche-caching/compare/0.0.5...0.1.0) (2026-10-11)
 
 
