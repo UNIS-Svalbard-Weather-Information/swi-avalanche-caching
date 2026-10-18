@@ -12,6 +12,17 @@ from rasterio.features import shapes
 from shapely.geometry import shape
 from tqdm import tqdm
 
+
+def _safe_extractall(zip_ref, target_dir):
+    """Extract all members, rejecting any path that would escape target_dir (zip-slip guard)."""
+    dest = os.path.realpath(target_dir)
+    for member in zip_ref.namelist():
+        resolved = os.path.realpath(os.path.join(dest, member))
+        if resolved != dest and not resolved.startswith(dest + os.sep):
+            raise ValueError(f"Blocked unsafe path in archive (zip slip): {member}")
+    zip_ref.extractall(target_dir)
+
+
 ORIENTATION_RANGES = {
     "N": [(315, 360), (0, 45)],
     "NE": [(45, 90)],
@@ -221,7 +232,7 @@ class MapsCaching:
                 self.logger.info("Download complete. Extracting files...")
 
                 with zipfile.ZipFile(zip_path, "r") as zip_ref:
-                    zip_ref.extractall(temp_dir)
+                    _safe_extractall(zip_ref, temp_dir)
                     for root, _, files in os.walk(temp_dir):
                         for file in files:
                             if file.endswith((".tif", ".txt")):
