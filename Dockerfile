@@ -6,7 +6,7 @@ COPY pyproject.toml uv.lock ./
 RUN uv export --frozen --no-dev --no-emit-project -o requirements.txt
 
 # Stage 2: Build
-FROM python:3.13-slim AS builder
+FROM python:3.14-slim AS builder
 WORKDIR /swi
 COPY --from=uv /swi/requirements.txt .
 # Install system dependencies required by rasterio
@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip install --no-cache-dir --require-hashes -r requirements.txt
 
 # Stage 3: Runtime
-FROM python:3.13-slim
+FROM python:3.14-slim
 # The project reserves uids above 9000. Every SWI image that shares a volume with this one
 # (the other cron jobs, mapproxy, the read-only data services) uses the same uid and gid,
 # so files written here are owned by the same user everywhere.
