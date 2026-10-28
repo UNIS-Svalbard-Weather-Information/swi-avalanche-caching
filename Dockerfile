@@ -1,12 +1,12 @@
 # Stage 1: Dependency resolution
-FROM astral/uv:python3.13-bookworm-slim AS uv
+FROM astral/uv:python3.14-bookworm-slim AS uv
 WORKDIR /swi
 COPY pyproject.toml uv.lock ./
 # Export the locked, hashed set: the image installs exactly what uv.lock pins.
 RUN uv export --frozen --no-dev --no-emit-project -o requirements.txt
 
 # Stage 2: Build
-FROM python:3.13-slim AS builder
+FROM python:3.14-slim AS builder
 WORKDIR /swi
 COPY --from=uv /swi/requirements.txt .
 # Install system dependencies required by rasterio
@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip install --no-cache-dir --require-hashes -r requirements.txt
 
 # Stage 3: Runtime
-FROM python:3.13-slim
+FROM python:3.14-slim
 # The project reserves uids above 9000. Every SWI image that shares a volume with this one
 # (the other cron jobs, mapproxy, the read-only data services) uses the same uid and gid,
 # so files written here are owned by the same user everywhere.
@@ -30,7 +30,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy only necessary files from the builder stage
-COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
+COPY --from=builder /usr/local/lib/python3.14/site-packages /usr/local/lib/python3.14/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 # The job never installs packages at runtime: remove pip (and its vendored copies of
 # urllib3, msgpack, ...) so they are neither exposed nor flagged by image scanners.
