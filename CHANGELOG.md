@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.1](https://github.com/UNIS-Svalbard-Weather-Information/swi-avalanche-caching/compare/0.2.0...0.2.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* **deps:** bump certifi from 2026.7.22 to 2026.10.19 ([7b37687](https://github.com/UNIS-Svalbard-Weather-Information/swi-avalanche-caching/commit/7b376876aa796694353be9c9234512cca3af1062))
+* **deps:** bump pillow from 12.3.0 to 13.0.0 ([027eaaf](https://github.com/UNIS-Svalbard-Weather-Information/swi-avalanche-caching/commit/027eaaf0b98eee14fbe290d660698f779eae3e2d))
+* **docker:** bump python base image from 3.13-slim to 3.14-slim ([b19ac02](https://github.com/UNIS-Svalbard-Weather-Information/swi-avalanche-caching/commit/b19ac028b69ea06623657fb1d45410045cffa6d3))
+
 ## [0.2.0](https://github.com/UNIS-Svalbard-Weather-Information/swi-avalanche-caching/compare/0.1.0...0.2.0) (2026-10-12)
 
 
